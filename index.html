@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Internet Shop</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <header class="header">
+      <h1>Internet Shop</h1>
+      <a href="create.html" class="btn">Створити елемент</a>
+    </header>
+
+    <section class="controls">
+      <input id="search" placeholder="Пошук за назвою" />
+      <select id="sort">
+        <option value="">Сортування</option>
+        <option value="price">За ціною</option>
+        <option value="name">За назвою</option>
+      </select>
+    </section>
+
+    <main class="products" id="products"></main>
+
+    <footer class="footer">
+      Загальна вартість: <span id="total">0</span> грн
+    </footer>
+
+    <script type="module" src="js/index.js"></script>
+  </body>
+</html>
