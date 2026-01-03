@@ -1,29 +1,48 @@
-import { createProduct, getProductById, updateProduct } from "./api.js";
+import {
+  createProduct,
+  getProductById,
+  updateProduct,
+} from "./api.js";
 import { Product } from "./product.js";
+import {
+  capitalizeFirstLetter,
+  validatePrice,
+} from "./utils.js";
 
+const form = document.getElementById("form");
 const params = new URLSearchParams(window.location.search);
 const id = params.get("id");
 
-const form = document.getElementById("form");
-
+/* ---------- EDIT MODE ---------- */
 if (id) {
   const product = await getProductById(id);
-  Object.entries(product).forEach(([key, value]) => {
-    if (form[key]) form[key].value = value;
-  });
+
+  if (product) {
+    form.name.value = product.name;
+    form.brand.value = product.brand;
+    form.price.value = product.price;
+    form.image.value = product.image || "";
+  }
 }
 
+/* ---------- SUBMIT ---------- */
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const product = new Product({
-    id: id || Date.now().toString(),
-    name: form.name.value,
-    brand: form.brand.value,
-    price: Number(form.price.value),
-    image: form.image.value,
-  });
+  try {
+    const price = validatePrice(form.price.value);
 
-  id ? await updateProduct(product) : await createProduct(product);
-  window.location.href = "index.html";
+    const product = new Product({
+      id: id || Date.now().toString(),
+      name: capitalizeFirstLetter(form.name.value),
+      brand: capitalizeFirstLetter(form.brand.value),
+      price,
+      image: form.image.value.trim() || null,
+    });
+
+    id ? await updateProduct(product) : await createProduct(product);
+    window.location.href = "index.html";
+  } catch (error) {
+    alert(error.message);
+  }
 });

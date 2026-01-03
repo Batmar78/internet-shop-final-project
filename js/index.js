@@ -1,59 +1,120 @@
 import { getProducts } from "./api.js";
+import { formatPrice } from "./utils.js";
 
-const container = document.getElementById("products");
+/* ---------- DOM ---------- */
+const productsContainer = document.getElementById("products");
+const nameFilterInput = document.getElementById("search");
+const brandFilter = document.getElementById("brand-filter");
+const sortSelect = document.getElementById("sort");
 const totalEl = document.getElementById("total");
+
+/* ---------- STATE ---------- */
 let products = [];
+let filteredProducts = [];
 
-async function render(items) {
-  container.innerHTML = "";
-  let total = 0;
+/* ---------- INIT ---------- */
+async function init() {
+  products = await getProducts();
+  filteredProducts = [...products];
 
-  items.forEach((p) => {
-    total += p.price;
-
-    const card = document.createElement("div");
-    card.className = "product-card";
-    const imageBlock = p.image ? `<img src="${p.image}" alt="${p.name}">` : "";
-    card.innerHTML = `
-  <div class="product-card__image ${
-    p.image ? "" : "product-card__image--empty"
-  }">
-    ${imageBlock}
-  </div>
-
-  <div class="product-card__content">
-    <h3 class="product-card__title">${p.name}</h3>
-    <p class="product-card__brand">${p.brand}</p>
-    <p class="product-card__price">${p.price} грн</p>
-  </div>
-
-  <div class="product-card__actions">
-    <a href="edit.html?id=${p.id}" class="btn btn--primary">Редагувати</a>
-    <a href="delete.html?id=${p.id}" class="btn btn--danger">Видалити</a>
-  </div>
-`;
-    container.appendChild(card);
-  });
-
-  totalEl.textContent = total;
+  initBrandFilter(products);
+  applyFilters();
 }
 
-document.getElementById("search").addEventListener("input", (e) => {
-  const regex = new RegExp(e.target.value, "i");
-  render(products.filter((p) => regex.test(p.name)));
-});
+/* ---------- BRAND FILTER ---------- */
+function initBrandFilter(items) {
+  const brands = new Set(items.map((p) => p.brand));
 
-document.getElementById("sort").addEventListener("change", (e) => {
-  if (e.target.value === "price") {
-    products.sort((a, b) => a.price - b.price);
-  }
-  if (e.target.value === "name") {
-    products.sort((a, b) => a.name.localeCompare(b.name));
-  }
-  render(products);
-});
+  brands.forEach((brand) => {
+    const option = document.createElement("option");
+    option.value = brand;
+    option.textContent = brand;
+    brandFilter.appendChild(option);
+  });
+}
 
-(async function init() {
-  products = await getProducts();
-  render(products);
-})();
+/* ---------- FILTERS ---------- */
+function applyFilters() {
+  const nameValue = nameFilterInput.value.trim();
+  const brandValue = brandFilter.value;
+
+  const regex = new RegExp(nameValue, "i");
+
+  filteredProducts = products.filter((product) => {
+    const matchName = regex.test(product.name);
+    const matchBrand = brandValue ? product.brand === brandValue : true;
+
+    return matchName && matchBrand;
+  });
+
+  applySort();
+}
+
+/* ---------- SORT ---------- */
+function applySort() {
+  const value = sortSelect.value;
+
+  if (value === "price") {
+    filteredProducts.sort((a, b) => a.price - b.price);
+  }
+
+  if (value === "name") {
+    filteredProducts.sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
+  }
+
+  renderProducts(filteredProducts);
+}
+
+/* ---------- RENDER ---------- */
+function renderProducts(items) {
+  productsContainer.innerHTML = "";
+
+  let total = 0;
+
+  if (!items.length) {
+    productsContainer.innerHTML = "<p>Товари відсутні</p>";
+    totalEl.textContent = "0";
+    return;
+  }
+
+  items.forEach((product) => {
+    total += product.price;
+
+    const card = document.createElement("article");
+    card.className = "product-card";
+
+    card.innerHTML = `
+      <div class="product-card__image ${
+        product.image ? "" : "product-card__image--empty"
+      }">
+        ${product.image ? `<img src="${product.image}" alt="${product.name}">` : ""}
+      </div>
+
+      <div class="product-card__content">
+        <h3 class="product-card__title">${product.name}</h3>
+        <p class="product-card__brand">${product.brand}</p>
+        <p class="product-card__price">
+          ${formatPrice(product.price)} грн
+        </p>
+      </div>
+
+      <div class="product-card__actions">
+        <a href="edit.html?id=${product.id}" class="btn btn--primary">Редагувати</a>
+        <a href="delete.html?id=${product.id}" class="btn btn--danger">Видалити</a>
+      </div>
+    `;
+
+    productsContainer.appendChild(card);
+  });
+
+  totalEl.textContent = formatPrice(total);
+}
+
+/* ---------- EVENTS ---------- */
+nameFilterInput.addEventListener("input", applyFilters);
+brandFilter.addEventListener("change", applyFilters);
+sortSelect.addEventListener("change", applySort);
+
+init();

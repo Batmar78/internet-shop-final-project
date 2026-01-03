@@ -1,9 +1,30 @@
-<form id="form" class="form">
-  <input id="name" placeholder="Назва" required />
-  <input id="brand" placeholder="Бренд" required />
-  <input id="price" type="number" placeholder="Ціна" required />
-  <input id="image" placeholder="URL зображення" required />
-  <button class="btn">Зберегти</button>
-</form>
+<!DOCTYPE html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Редагувати товар</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <header class="header">
+      <h1>Редагувати товар</h1>
+      <a href="index.html" class="btn">На головну</a>
+    </header>
 
-<script type="module" src="js/form.js"></script>
+    <main class="form">
+      <form id="form">
+        <input name="name" placeholder="Назва товару" required />
+        <input name="brand" placeholder="Бренд" required />
+        <input name="price" type="number" placeholder="Ціна" required />
+        <input
+          name="image"
+          placeholder="URL зображення (необовʼязково)"
+        />
+
+        <button class="btn btn--primary">Зберегти</button>
+      </form>
+    </main>
+
+    <script type="module" src="js/form.js"></script>
+  </body>
+</html>

@@ -1,5 +1,27 @@
-<h2>Ви впевнені, що хочете видалити товар?</h2>
-<button id="yes" class="btn btn--danger">Так</button>
-<a href="index.html" class="btn">Ні</a>
+<!DOCTYPE html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Видалити товар</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <header class="header">
+      <h1>Видалення товару</h1>
+      <a href="index.html" class="btn">На головну</a>
+    </header>
 
-<script type="module" src="js/delete.js"></script>
+    <main class="form">
+  <h2>Ви впевнені, що хочете видалити цей товар?</h2>
+
+  <div id="product-info"></div>
+
+  <div style="display: flex; gap: 12px; margin-top: 16px">
+    <button id="confirm" class="btn btn--danger">Так, видалити</button>
+    <a href="index.html" class="btn">Скасувати</a>
+  </div>
+</main>
+
+    <script type="module" src="js/delete.js"></script>
+  </body>
+</html>
